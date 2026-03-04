@@ -1,0 +1,87 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>📋 My Dashboard</h2>
+
+<div class="dashboard-grid">
+
+  <!-- Today’s Tasks -->
+  <div class="task-box">
+    <h3>📌 Today’s Tasks</h3>
+    {% if today_tasks %}
+    {% for task in today_tasks[:2] %}
+    <div class="task-card today-task" onclick="location.href='/staff/task/{{ task.id }}'">
+      <h4>{{ task.title }}</h4>
+      <p>{{ task.description }}</p>
+      <p>Due: {{ task.deadline }}</p>
+    </div>
+    {% endfor %}
+    {% if today_tasks|length > 2 %}
+    <a href="/staff/tasks/today" class="read-more">View More →</a>
+    {% endif %}
+    {% else %}
+    <p>No tasks for today 🎉</p>
+    {% endif %}
+  </div>
+
+  <!-- Pending Tasks -->
+  <div class="task-box">
+    <h3>⏳ Pending Tasks</h3>
+    {% set pending_tasks = tasks|selectattr("status", "equalto", "pending")|list %}
+    {% if pending_tasks %}
+    {% for task in pending_tasks[:2] %}
+    <div class="task-card pending-task" onclick="location.href='/staff/task/{{ task.id }}'">
+      <h4>{{ task.title }}</h4>
+      <p>{{ task.description }}</p>
+      <p>Due: {{ task.deadline }}</p>
+    </div>
+    {% endfor %}
+    {% if pending_tasks|length > 2 %}
+    <a href="/staff/tasks/pending" class="read-more">View More →</a>
+    {% endif %}
+    {% else %}
+    <p>No pending tasks 🎉</p>
+    {% endif %}
+  </div>
+
+  <!-- Overdue Tasks -->
+  <div class="task-box">
+    <h3>⚠️ Overdue Tasks</h3>
+    {% set overdue_tasks = tasks|selectattr("is_overdue")|list %}
+    {% if overdue_tasks %}
+    {% for task in overdue_tasks[:2] %}
+    <div class="task-card overdue-task" onclick="location.href='/staff/task/{{ task.id }}'">
+      <h4>{{ task.title }}</h4>
+      <p>{{ task.description }}</p>
+      <p>Due: {{ task.deadline }}</p>
+    </div>
+    {% endfor %}
+    {% if overdue_tasks|length > 2 %}
+    <a href="/staff/tasks/overdue" class="read-more">View More →</a>
+    {% endif %}
+    {% else %}
+    <p>No overdue tasks 🎉</p>
+    {% endif %}
+  </div>
+
+  <!-- Completed Tasks -->
+  <div class="task-box">
+    <h3>✅ Completed Tasks</h3>
+    {% set completed_tasks = tasks|selectattr("status", "equalto", "completed")|list %}
+    {% if completed_tasks %}
+    {% for task in completed_tasks[:2] %}
+    <div class="task-card completed-task" onclick="location.href='/staff/task/{{ task.id }}'">
+      <h4>{{ task.title }}</h4>
+      <p>{{ task.description }}</p>
+      <p>Due: {{ task.deadline }}</p>
+    </div>
+    {% endfor %}
+    {% if completed_tasks|length > 2 %}
+    <a href="/staff/tasks/completed" class="read-more">View More →</a>
+    {% endif %}
+    {% else %}
+    <p>No completed tasks yet</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

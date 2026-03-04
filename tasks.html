@@ -1,0 +1,137 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>📝 Create Task</h2>
+<form method="post">
+    <!-- Task Title -->
+    <input type="text" name="title" placeholder="Task Title" required>
+
+    <!-- Task Description -->
+    <textarea name="description" placeholder="Task Description"></textarea>
+
+    <!-- Staff Dropdown with Checkboxes -->
+    <label>Select Staff</label>
+    <div class="dropdown">
+        <button type="button" class="dropdown-btn" id="dropdownBtn">-- Choose Staff -- ▼</button>
+        <div class="dropdown-content" id="dropdownContent">
+            {% for staff in staff_list %}
+            <label class="dropdown-option">
+                <input type="checkbox" name="assigned_to" value="{{ staff.id }}" class="option">
+                <span>{{ staff.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+    <p class="selected">Selected: <span id="selectedList">None</span></p>
+
+    <!-- Create Date (auto-filled today) -->
+    <label>Create Date</label>
+    <input type="date" name="create_date" id="createDate" required readonly>
+
+    <!-- Due Date -->
+    <label>Due Date</label>
+    <input type="date" name="due_date" required>
+
+    <!-- Submit -->
+    <button type="submit">Assign Task</button>
+</form>
+
+<style>
+    .dropdown {
+        position: relative;
+        margin: 12px 0;
+    }
+
+    .dropdown-btn {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #fff;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        border: 1px solid #ccc;
+        background: #fff;
+        display: none;
+        border-radius: 6px;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        z-index: 10;
+    }
+
+    .dropdown-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .dropdown-option input[type="checkbox"] {
+        width: auto !important;
+        display: inline-block !important;
+        margin: 0 !important;
+        margin-right: 12px !important;
+        flex-shrink: 0;
+    }
+
+    .dropdown-option:hover {
+        background: #f4f6fb;
+    }
+
+    .selected {
+        margin-top: 15px;
+        font-style: italic;
+        color: #555;
+    }
+</style>
+
+<script>
+    // ✅ Auto-fill today's date in Create Date field
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("createDate").value = today;
+
+    const dropdownBtn = document.getElementById("dropdownBtn");
+    const dropdownContent = document.getElementById("dropdownContent");
+    const selectedList = document.getElementById("selectedList");
+
+    // Toggle dropdown
+    dropdownBtn.addEventListener("click", () => {
+        dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener("click", (event) => {
+        if (!dropdownBtn.contains(event.target) && !dropdownContent.contains(event.target)) {
+            dropdownContent.style.display = "none";
+        }
+    });
+
+    // Update selected items + button text
+    document.querySelectorAll(".option").forEach(option => {
+        option.addEventListener("change", () => {
+            const checked = Array.from(document.querySelectorAll(".option:checked"))
+                .map(opt => opt.parentNode.textContent.trim());
+
+            selectedList.textContent = checked.length ? checked.join(", ") : "None";
+
+            if (checked.length === 0) {
+                dropdownBtn.textContent = "-- Choose Staff -- ▼";
+            } else if (checked.length <= 2) {
+                dropdownBtn.textContent = checked.join(", ") + " ▼";
+            } else {
+                dropdownBtn.textContent = `${checked.length} staff selected ▼`;
+            }
+        });
+    });
+</script>
+{% endblock %}

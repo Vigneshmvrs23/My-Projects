@@ -1,0 +1,32 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>{{ title }}</h2>
+
+<div class="task-grid">
+    {% for task in tasks %}
+    <div class="task-card" onclick="location.href='/staff/task/{{ task.id }}'">
+        <h4>{{ task.title }}</h4>
+        <p>{{ task.description }}</p>
+        <p>Due: {{ task.deadline }}</p>
+        <p>Status: {{ task.status }}</p>
+    </div>
+    {% else %}
+    <p>No tasks found 🎉</p>
+    {% endfor %}
+</div>
+
+<!-- ✅ Pagination -->
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}" class="page-btn">← Prev</a>
+    {% endif %}
+
+    <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}" class="page-btn">Next →</a>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('staff.dashboard') }}" class="back-btn"> ←</a>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>📝 Task Details</h2>
+<div class="task-details">
+    <div class="task-card">
+        <h3>{{ task.title }}</h3>
+        <p>{{ task.description }}</p>
+        <p>Due Date: {{ task.deadline }}</p>
+        <p>Status: {{ task.status }}</p>
+
+        {% if task.status == 'pending' %}
+        <a href="{{ url_for('staff.complete_task', id=task.id) }}" class="btn-complete">✅ Mark Complete</a>
+        {% endif %}
+    </div>
+</div>
+<a href="{{ url_for('staff.dashboard') }}" class="back-btn">← </a>
+{% endblock %}

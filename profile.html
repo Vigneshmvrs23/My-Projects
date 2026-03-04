@@ -1,0 +1,31 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>👤 Staff Profile</h2>
+
+<div class="admin-profile-container left-align">
+    <div class="admin-profile-header">
+        {% if user.profile_pic %}
+        <img src="{{ user.profile_pic }}" alt="{{ user.name }}" class="admin-profile-pic">
+        {% else %}
+        <div class="admin-profile-avatar">{{ user.name[0] }}</div>
+        {% endif %}
+
+        <div class="admin-profile-details">
+            <div class="detail-row"><span class="label">Name:</span><span class="value">{{ user.name }}</span></div>
+            <div class="detail-row"><span class="label">Email:</span><span class="value">{{ user.email }}</span></div>
+            <div class="detail-row"><span class="label">Role:</span><span class="value role-badge {{ user.role }}">{{ user.role|capitalize }}</span></div>
+            <div class="detail-row"><span class="label">Status:</span>
+                {% if user.is_active %}
+                <span class="status-badge active">Active</span>
+                {% else %}
+                <span class="status-badge inactive">Inactive</span>
+                {% endif %}
+            </div>
+
+            <div class="admin-profile-actions">
+                <a href="{{ url_for('staff.edit_profile') }}" class="admin-edit-btn">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

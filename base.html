@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staff Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <!-- ✅ Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="nav-left">
+            <div class="logo">⚡ Staff Panel</div>
+        </div>
+
+        <div class="nav-right">
+            <span class="welcome">Welcome, {{ user.name if user else session['name'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <button id="hamburgerBtn" class="hamburger" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMobile()">☰</button>
+        </div>
+    </div>
+
+    <!-- Centered dropdown / mobile menu -->
+    <nav id="mobile-menu" class="mobile-menu" aria-hidden="true">
+        <a href="{{ url_for('staff.dashboard') }}">🏠 Dashboard</a>
+        <a href="{{ url_for('staff.my_tasks') }}">📋 My Tasks</a>
+        <a href="{{ url_for('staff.create_task') }}">📝 Create Task</a>
+        <a href="{{ url_for('staff.task_graph') }}">📊 Task Graph</a>
+        <a href="{{ url_for('staff.profile') }}">👤 Profile</a>
+        <a href="{{ url_for('logout') }}" class="logout-btn-mobile">🚪 Logout</a>
+    </nav>
+
+    <!-- Layout -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- ✅ Profile Picture + Name instead of "Navigation" -->
+            <div class="profile-pic">
+                {% if user and user.profile_pic %}
+                    <img src="{{ user.profile_pic }}" alt="{{ user.name }}">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default.png') }}" alt="Default Profile">
+                {% endif %}
+                <!-- <h3>{{ user.name if user else session['name'] }}</h3> -->
+            </div>
+
+            <!-- ✅ Navigation links remain unchanged -->
+            <div class="nav-links">
+                <a href="{{ url_for('staff.dashboard') }}">🏠 Dashboard</a>
+                <a href="{{ url_for('staff.my_tasks') }}">📋 My Tasks</a>
+                <a href="{{ url_for('staff.create_task') }}">📝 Create Task</a>
+                <a href="{{ url_for('staff.task_graph') }}">📊 Task Graph</a>
+                <a href="{{ url_for('staff.profile') }}">👤 Profile</a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script>
+    function toggleMobile(){
+        var m = document.getElementById('mobile-menu');
+        var btn = document.getElementById('hamburgerBtn');
+        if(m){
+            var isShown = m.classList.toggle('show');
+            btn.setAttribute('aria-expanded', isShown);
+            m.setAttribute('aria-hidden', !isShown);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('#mobile-menu a').forEach(function(el){
+            el.addEventListener('click', function(){
+                var m = document.getElementById('mobile-menu');
+                var btn = document.getElementById('hamburgerBtn');
+                if(m && m.classList.contains('show')){
+                    m.classList.remove('show');
+                    btn.setAttribute('aria-expanded','false');
+                    m.setAttribute('aria-hidden','true');
+                }
+            });
+        });
+
+        // close dropdown when clicking outside
+        document.addEventListener('click', function(e){
+            var mobile = document.getElementById('mobile-menu');
+            var insideMobile = e.target.closest && (e.target.closest('#mobile-menu') || e.target.closest('#hamburgerBtn'));
+            if(!insideMobile && mobile && mobile.classList.contains('show')){
+                mobile.classList.remove('show');
+                var btn = document.getElementById('hamburgerBtn');
+                if(btn) btn.setAttribute('aria-expanded','false');
+                mobile.setAttribute('aria-hidden','true');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

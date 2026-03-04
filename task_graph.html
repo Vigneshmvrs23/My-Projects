@@ -1,0 +1,115 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>📊 Task Status Overview</h2>
+
+<!-- ✅ Chart Data -->
+<script type="application/json" id="chart-data">
+{
+  "completed": {{ completed|default(0)|tojson }},
+  "incomplete": {{ incomplete|default(0)|tojson }},
+  "overdue": {{ overdue|default(0)|tojson }}
+}
+</script>
+
+<div class="chart-container pie-chart-container">
+    <canvas id="taskStatus" class="responsive-chart"></canvas>
+</div>
+<script>
+  var data = JSON.parse(document.getElementById('chart-data').textContent);
+
+  var ctx = document.getElementById('taskStatus').getContext('2d');
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Completed', 'Incomplete', 'Overdue'],
+      datasets: [{
+        data: [data.completed, data.incomplete, data.overdue],
+        backgroundColor: ['#4CAF50', '#FFC107', '#F44336']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: true },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          onHover: function(e, legendItem, legend) {
+            e.native.target.style.cursor = 'pointer';
+          },
+          onClick: function(e) {
+            // disable click toggle to avoid requiring clicks
+          }
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function(context) {
+              let total = context.dataset.data.reduce((a, b) => a + b, 0);
+              let value = context.raw;
+              let percentage = total ? ((value / total) * 100).toFixed(1) : 0;
+              return `${context.label}: ${value} (${percentage}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<h3>📊 Yearly Tasks Overview</h3>
+
+<!-- ✅ Yearly Data -->
+<script type="application/json" id="yearly-data">
+{
+  "months": {{ months|default([])|tojson }},
+  "total_counts": {{ total_counts|default([])|tojson }},
+  "completed_counts": {{ completed_counts|default([])|tojson }},
+  "incomplete_counts": {{ incomplete_counts|default([])|tojson }}
+}
+</script>
+
+<div class="chart-container line-chart-container">
+    <canvas id="tasksYearly" class="responsive-chart"></canvas>
+</div>
+<script>
+  var yearlyData = JSON.parse(document.getElementById('yearly-data').textContent);
+
+  var ctx = document.getElementById('tasksYearly').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: yearlyData.months,
+      datasets: [
+        {
+          label: 'Total Tasks',
+          data: yearlyData.total_counts,
+          borderColor: 'yellow',
+          fill: false
+        },
+        {
+          label: 'Completed Tasks',
+          data: yearlyData.completed_counts,
+          borderColor: 'blue',
+          fill: false
+        },
+        {
+          label: 'Incomplete Tasks',
+          data: yearlyData.incomplete_counts,
+          borderColor: 'red',
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      events: ['mousemove','mouseout','click','touchstart','touchmove'],
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+</script>
+{% endblock %}

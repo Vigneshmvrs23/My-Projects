@@ -1,0 +1,57 @@
+{% extends "staff/base.html" %}
+{% block content %}
+<h2>📋 My Tasks</h2>
+
+<form method="get" action="{{ url_for('staff.my_tasks') }}" class="filter-bar">
+    <select name="status">
+        <option value="">-- Filter by Status --</option>
+        <option value="today">Today</option>
+        <option value="completed">✅ Completed</option>
+        <option value="pending">⏳ Pending</option>
+        <option value="overdue">⚠️ Overdue</option>
+    </select>
+    <button type="submit">Apply Filter</button>
+    <a href="{{ url_for('staff.my_tasks') }}" class="reset-btn">Reset</a>
+</form>
+
+<div class="table-wrapper">
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Deadline</th>
+        </tr>
+        {% for task in tasks %}
+        <tr>
+            <td title="{{ task.title }}">{{ task.title }}</td>
+            <td title="{{ task.description }}">{{ task.description }}</td>
+            <td>
+                {% if task.status == 'completed' %}
+                ✅ Completed
+                {% elif task.status == 'overdue' %}
+                ⚠️ Overdue
+                {% else %}
+                ⏳ Pending
+                {% endif %}
+            </td>
+            <td>{{ task.deadline }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}" class="page-btn">← Prev</a>
+    {% endif %}
+
+    <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+
+    {% if page < total_pages %} <a href="?page={{ page + 1 }}" class="page-btn">Next →</a>
+        {% endif %}
+</div>
+
+
+{% endblock %}
